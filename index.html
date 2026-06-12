@@ -9,26 +9,13 @@
   body { background: #0a0a0f; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; overflow-x: hidden; }
   canvas#particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   .content { position: relative; z-index: 1; }
-
-  /* ENTRY SPLASH */
-  #entry-splash {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #0a0a0f;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer;
-  }
-  #entry-splash .splash-logo { font-size: 28px; font-weight: 800; color: #a89fef; letter-spacing: 4px; margin-bottom: 24px; }
-  #entry-splash .splash-logo span { color: #5dcaa5; }
-  #entry-splash .splash-prompt {
-    font-size: 16px; color: #666; letter-spacing: 2px; text-transform: uppercase;
-    animation: fade-pulse 1.4s infinite;
-  }
+  #entry-splash { position: fixed; inset: 0; z-index: 9999; background: #0a0a0f; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.4s ease; }
+  #entry-splash.hidden { opacity: 0; pointer-events: none; }
+  .splash-logo { font-size: 28px; font-weight: 800; color: #a89fef; letter-spacing: 4px; margin-bottom: 24px; }
+  .splash-logo span { color: #5dcaa5; }
+  .splash-border { width: 180px; height: 2px; background: linear-gradient(90deg, transparent, #7f77dd, transparent); margin-bottom: 32px; }
+  .splash-prompt { font-size: 16px; color: #666; letter-spacing: 2px; text-transform: uppercase; animation: fade-pulse 1.4s infinite; }
   @keyframes fade-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  #entry-splash .splash-border {
-    width: 180px; height: 2px; background: linear-gradient(90deg, transparent, #7f77dd, transparent);
-    margin-bottom: 32px;
-  }
-
   nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; border-bottom: 1px solid #7f77dd33; background: #0a0a0fdd; backdrop-filter: blur(8px); }
   .logo { font-size: 20px; font-weight: 700; color: #a89fef; letter-spacing: 2px; }
   .logo span { color: #5dcaa5; }
@@ -54,14 +41,12 @@
   .terminal-bar { display: flex; gap: 6px; margin-bottom: 14px; }
   .dot { width: 11px; height: 11px; border-radius: 50%; }
   .dot-r { background: #ff5f56; } .dot-y { background: #ffbd2e; } .dot-g { background: #27c93f; }
-  .t-line { color: #5dcaa5; }
-  .t-line span { color: #a89fef; }
+  .t-line { color: #5dcaa5; } .t-line span { color: #a89fef; }
   .cursor { display: inline-block; width: 8px; height: 13px; background: #5dcaa5; animation: blink .7s infinite; vertical-align: middle; }
   @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
   .btn-wrap { text-align: center; margin-bottom: 12px; }
   .btn-download { display: inline-block; padding: 17px 54px; background: linear-gradient(135deg, #7f77dd, #5dcaa5); color: #fff; font-size: 17px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.5px; animation: glow 2.2s infinite; transition: transform 0.15s; }
-  .btn-download:hover { transform: scale(1.04); }
-  .btn-download:active { transform: scale(0.97); }
+  .btn-download:hover { transform: scale(1.04); } .btn-download:active { transform: scale(0.97); }
   @keyframes glow { 0%,100% { box-shadow: 0 0 18px #7f77dd55, 0 0 36px #7f77dd1a; } 50% { box-shadow: 0 0 28px #a89fef88, 0 0 54px #5dcaa533; } }
   .btn-note { font-size: 12px; color: #444; text-align: center; margin-bottom: 52px; margin-top: 8px; }
   .reviews { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; max-width: 860px; margin: 0 auto 60px; padding: 0 24px; }
@@ -74,7 +59,7 @@
   .ticker span { padding: 0 36px; font-size: 13px; color: #a89fef88; }
   @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
   footer { border-top: 1px solid #ffffff09; text-align: center; padding: 20px; font-size: 12px; color: #2a2a2a; }
-  #bongo-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: #000000cc; align-items: center; justify-content: center; flex-direction: column; }
+  #bongo-overlay { display: none; position: fixed; inset: 0; z-index: 888; background: #000000cc; align-items: center; justify-content: center; flex-direction: column; }
   #bongo-overlay.show { display: flex; }
   #bongo-box { background: #13131f; border: 2px solid #a89fef; border-radius: 16px; padding: 40px 56px; text-align: center; }
   #bongo-cat { font-size: 100px; line-height: 1; animation: bongo-bounce 0.2s infinite alternate; }
@@ -86,10 +71,9 @@
 </style>
 </head>
 <body>
-
 <audio id="bg-music" src="kungfu.mp3" loop></audio>
+<canvas id="particles"></canvas>
 
-<!-- ENTRY SPLASH -->
 <div id="entry-splash">
   <div class="splash-logo">VRC<span>-HACK</span> PRO</div>
   <div class="splash-border"></div>
@@ -100,7 +84,7 @@
   <div id="bongo-box">
     <div id="bongo-cat">🐱</div>
     <div id="bongo-meow">MEOW</div>
-    <button id="bongo-close" onclick="document.getElementById('bongo-overlay').classList.remove('show')">close</button>
+    <button id="bongo-close">close</button>
   </div>
 </div>
 
@@ -175,18 +159,22 @@ function draw() {
 }
 draw();
 
+const splash = document.getElementById('entry-splash');
 const music = document.getElementById('bg-music');
 music.volume = 0.6;
 
-document.getElementById('entry-splash').addEventListener('click', function() {
-  this.style.transition = 'opacity 0.4s';
-  this.style.opacity = '0';
+splash.addEventListener('click', function() {
+  splash.classList.add('hidden');
   music.play().catch(() => {});
-  setTimeout(() => { this.style.display = 'none'; }, 400);
+  setTimeout(() => { splash.style.display = 'none'; }, 450);
 });
 
 document.getElementById('dl-btn').addEventListener('click', function() {
   document.getElementById('bongo-overlay').classList.add('show');
+});
+
+document.getElementById('bongo-close').addEventListener('click', function() {
+  document.getElementById('bongo-overlay').classList.remove('show');
 });
 </script>
 </body>
