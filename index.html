@@ -174,7 +174,7 @@ splash.addEventListener('click', function() {
   setTimeout(() => { splash.style.display = 'none'; }, 450);
 });
 
-const TOTAL_CLICKS = 200;
+const TOTAL_CLICKS = 600;
 let clicksLeft = TOTAL_CLICKS;
 
 function resetBongo() {
@@ -292,16 +292,34 @@ document.getElementById('bongo-click').addEventListener('click', function() {
     })();
 
   } else {
-    const msgs = ['MEOW','mrow...','HISS','purr','MEOW!!','nya~'];
+    const msgs = [
+      'MEOW', 'mrow...', 'HISS', 'purr', 'MEOW!!', 'nya~',
+      '🥋 HI-YA', 'kung fu...', 'WATAAH', '⚡ FAST AS LIGHTNING',
+      'everybody was...', 'kung fu CLICKING', 'HAI!!', 'meoWATAH'
+    ];
     document.getElementById('bongo-meow').textContent = msgs[Math.floor(Math.random()*msgs.length)];
     document.getElementById('bongo-countdown').textContent = `${clicksLeft} click${clicksLeft!==1?'s':''} until download`;
-    document.getElementById('bongo-click').textContent = clicksLeft > 100
-      ? 'keep clicking...'
-      : clicksLeft > 50 ? 'almost there... (not really)'
-      : clicksLeft > 10 ? `${clicksLeft} more!`
-      : `SO CLOSE — ${clicksLeft} left!!!`;
+    document.getElementById('bongo-click').textContent =
+      clicksLeft > 550 ? '🥋 everybody was kung fu clicking...' :
+      clicksLeft > 500 ? '⚡ those clicks were fast as lightning!' :
+      clicksLeft > 450 ? '😤 in fact it was a little bit frightening' :
+      clicksLeft > 400 ? '🐱 the cat is judging your commitment' :
+      clicksLeft > 350 ? '🥋 he fought with expert timing!' :
+      clicksLeft > 300 ? '💀 your finger: on life support' :
+      clicksLeft > 250 ? '🎵 *kung fu fighting intensifies*' :
+      clicksLeft > 200 ? '🐱 the cat respects your dedication (barely)' :
+      clicksLeft > 175 ? '🥋 ANCIENT CHINESE SECRET: keep clicking' :
+      clicksLeft > 150 ? '⚡ funky Billie Jean was not his lover' :
+      clicksLeft > 125 ? '💀 your mouse: filing for divorce' :
+      clicksLeft > 100 ? '🥋 the dragon has been awoken' :
+      clicksLeft > 75  ? '🐱 cat says almost... (cat is lying)' :
+      clicksLeft > 50  ? '🔥 HI-YA!!! YOU ARE SO CLOSE' :
+      clicksLeft > 25  ? `⚡ ${clicksLeft} LEFT — DO NOT STOP` :
+      clicksLeft > 10  ? `🥋 FINISH HIM — ${clicksLeft} CLICKS!!!` :
+                         `🐱💥 ${clicksLeft}... THE CAT IS READY`;
   }
 });
 </script>
 </body>
 </html>
+
