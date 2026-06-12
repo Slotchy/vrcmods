@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VRC-HACK PRO | Free VRChat Cheats</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  canvas#particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  .content { position: relative; z-index: 1; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; border-bottom: 1px solid #7f77dd33; background: #0a0a0fdd; backdrop-filter: blur(8px); }
+  .logo { font-size: 20px; font-weight: 700; color: #a89fef; letter-spacing: 2px; }
+  .logo span { color: #5dcaa5; }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; color: #aaa; }
+  .badge-live { background: #1d9e7522; color: #5dcaa5; border: 1px solid #5dcaa566; border-radius: 4px; padding: 3px 12px; font-size: 12px; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .hero { text-align: center; padding: 72px 24px 32px; }
+  .hero-tag { display: inline-block; background: #7f77dd18; color: #a89fef; border: 1px solid #7f77dd44; border-radius: 4px; padding: 4px 16px; font-size: 12px; letter-spacing: 1px; margin-bottom: 24px; text-transform: uppercase; }
+  h1 { font-size: clamp(30px, 5.5vw, 60px); font-weight: 800; line-height: 1.1; color: #fff; margin-bottom: 16px; }
+  h1 span { color: #a89fef; }
+  .subtitle { font-size: 15px; color: #999; max-width: 500px; margin: 0 auto 40px; line-height: 1.7; }
+  .stats { display: flex; justify-content: center; gap: 48px; margin-bottom: 52px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 30px; font-weight: 700; color: #a89fef; }
+  .stat-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 14px; max-width: 860px; margin: 0 auto 52px; padding: 0 24px; }
+  .feat-card { background: #111119; border: 1px solid #7f77dd28; border-radius: 10px; padding: 20px 16px; text-align: center; transition: border-color 0.3s, transform 0.25s; }
+  .feat-card:hover { border-color: #a89fef88; transform: translateY(-3px); }
+  .feat-icon { font-size: 26px; margin-bottom: 10px; }
+  .feat-title { font-size: 14px; font-weight: 600; color: #e0e0ff; margin-bottom: 6px; }
+  .feat-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .terminal { background: #0c0c15; border: 1px solid #5dcaa528; border-radius: 10px; padding: 20px; max-width: 500px; margin: 0 auto 44px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.9; text-align: left; }
+  .terminal-bar { display: flex; gap: 6px; margin-bottom: 14px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; } .dot-y { background: #ffbd2e; } .dot-g { background: #27c93f; }
+  .t-line { color: #5dcaa5; }
+  .t-line span { color: #a89fef; }
+  .cursor { display: inline-block; width: 8px; height: 13px; background: #5dcaa5; animation: blink .7s infinite; vertical-align: middle; }
+  @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  .btn-wrap { text-align: center; margin-bottom: 12px; }
+  .btn-download { display: inline-block; padding: 17px 54px; background: linear-gradient(135deg, #7f77dd, #5dcaa5); color: #fff; font-size: 17px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; letter-spacing: 0.5px; animation: glow 2.2s infinite; transition: transform 0.15s; }
+  .btn-download:hover { transform: scale(1.04); }
+  .btn-download:active { transform: scale(0.97); }
+  @keyframes glow { 0%,100% { box-shadow: 0 0 18px #7f77dd55, 0 0 36px #7f77dd1a; } 50% { box-shadow: 0 0 28px #a89fef88, 0 0 54px #5dcaa533; } }
+  .btn-note { font-size: 12px; color: #444; text-align: center; margin-bottom: 52px; margin-top: 8px; }
+  .reviews { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; max-width: 860px; margin: 0 auto 60px; padding: 0 24px; }
+  .review-card { background: #111119; border: 1px solid #ffffff0d; border-radius: 10px; padding: 18px; }
+  .review-stars { color: #ef9f27; font-size: 13px; margin-bottom: 8px; }
+  .review-text { font-size: 13px; color: #aaa; margin-bottom: 10px; line-height: 1.5; }
+  .review-user { font-size: 12px; color: #555; }
+  .ticker-wrap { overflow: hidden; background: #7f77dd14; border-top: 1px solid #7f77dd22; border-bottom: 1px solid #7f77dd22; padding: 8px 0; margin-bottom: 52px; }
+  .ticker { display: flex; white-space: nowrap; animation: ticker 20s linear infinite; }
+  .ticker span { padding: 0 36px; font-size: 13px; color: #a89fef88; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  footer { border-top: 1px solid #ffffff09; text-align: center; padding: 20px; font-size: 12px; color: #2a2a2a; }
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<div class="content">
+<nav>
+  <div class="logo">VRC<span>-HACK</span> PRO</div>
+  <div class="nav-links"><span>Features</span><span>Download</span><span>Forum</span><span>Discord</span></div>
+  <div class="badge-live">● UNDETECTED</div>
+</nav>
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>ESP / WALLHACK</span><span>AVATAR STEALER</span><span>SPEED HACK</span><span>FLY MOD</span><span>NOCLIP</span><span>WORLD EDITOR</span><span>CRASH CLIENT</span><span>AUTO-AIM</span>
+    <span>ESP / WALLHACK</span><span>AVATAR STEALER</span><span>SPEED HACK</span><span>FLY MOD</span><span>NOCLIP</span><span>WORLD EDITOR</span><span>CRASH CLIENT</span><span>AUTO-AIM</span>
+  </div>
+</div>
+<section class="hero">
+  <div class="hero-tag">v9.4.1 — Updated June 2026</div>
+  <h1>The Most Advanced<br><span>VRChat Cheat Client</span><br>— Completely Free</h1>
+  <p class="subtitle">Full-featured mod menu with ESP, avatar ripping, speed hack, fly mod, and more. Bypass VRChat's anti-cheat with our injection method.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">13,214</div><div class="stat-label">Active Users</div></div>
+    <div class="stat"><div class="stat-num">98.7%</div><div class="stat-label">Undetect Rate</div></div>
+    <div class="stat"><div class="stat-num">4.9 / 5</div><div class="stat-label">User Rating</div></div>
+    <div class="stat"><div class="stat-num">20,346</div><div class="stat-label">Downloads</div></div>
+  </div>
+</section>
+<div class="features">
+  <div class="feat-card"><div class="feat-icon">👁️</div><div class="feat-title">Full ESP</div><div class="feat-desc">Player boxes, skeletons, name tags, and distance through any surface</div></div>
+  <div class="feat-card"><div class="feat-icon">🚀</div><div class="feat-title">Speed Hack</div><div class="feat-desc">Adjustable movement speed multiplier up to 50x</div></div>
+  <div class="feat-card"><div class="feat-icon">🦅</div><div class="feat-title">Fly Mode</div><div class="feat-desc">Unrestricted vertical movement with adjustable altitude cap</div></div>
+  <div class="feat-card"><div class="feat-icon">🎭</div><div class="feat-title">Avatar Ripper</div><div class="feat-desc">Extract any public or private avatar from any instance</div></div>
+  <div class="feat-card"><div class="feat-icon">🌍</div><div class="feat-title">World Mods</div><div class="feat-desc">Noclip, object spawner, world crash, and portal gun</div></div>
+  <div class="feat-card"><div class="feat-icon">🔒</div><div class="feat-title">Anti-Detection</div><div class="feat-desc">Proprietary injection method bypasses EasyAntiCheat</div></div>
+</div>
+<div class="terminal">
+  <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+  <div class="t-line">[<span>SYS</span>] Initializing VRC-HACK PRO v9.4.1</div>
+  <div class="t-line">[<span>OK</span>]  ESP module loaded</div>
+  <div class="t-line">[<span>OK</span>]  FlyHack injected</div>
+  <div class="t-line">[<span>OK</span>]  AvatarRipper v3.1 ready</div>
+  <div class="t-line">[<span>OK</span>]  Anti-detection layer active</div>
+  <div class="t-line">[<span>SYS</span>] Ready. Awaiting launch <span class="cursor"></span></div>
+</div>
+<div class="btn-wrap">
+  <a class="btn-download" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">⬇ Download Free — v9.4.1</a>
+</div>
+<p class="btn-note">Windows 10/11 · No antivirus flag · Auto-updater included</p>
+<div class="reviews">
+  <div class="review-card"><div class="review-stars">★★★★★</div><div class="review-text">"Been using this for 3 months. Fly mod and ESP work perfectly. Haven't been banned once."</div><div class="review-user">— KiraVR_</div></div>
+  <div class="review-card"><div class="review-stars">★★★★★</div><div class="review-text">"Avatar ripper is insane. Grabbed 40+ private avys in one session. 10/10 no issues."</div><div class="review-user">— phantom_404</div></div>
+  <div class="review-card"><div class="review-stars">★★★★☆</div><div class="review-text">"Took a minute to set up but once it was running, everything worked as described."</div><div class="review-user">— Noctis_VRC</div></div>
+</div>
+<footer>VRC-HACK PRO © 2026</footer>
+</div>
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+const COLORS = ['#7f77dd','#5dcaa5','#a89fef','#1d9e75','#534ab7'];
+const particles = Array.from({length:80}, () => ({ x: Math.random()*2000, y: Math.random()*1200, r: Math.random()*1.8+0.4, dx: (Math.random()-0.5)*0.35, dy: -Math.random()*0.45-0.1, color: COLORS[Math.floor(Math.random()*COLORS.length)], alpha: Math.random()*0.45+0.08 }));
+function draw() {
+  ctx.clearRect(0,0,W,H);
+  for (const p of particles) {
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.fill();
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.y<-10){p.y=H+10;p.x=Math.random()*W;} if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10;
+  }
+  ctx.globalAlpha=1; requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
