@@ -39,7 +39,7 @@
   .cursor { display: inline-block; width: 8px; height: 13px; background: #5dcaa5; animation: blink .7s infinite; vertical-align: middle; }
   @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
   .btn-wrap { text-align: center; margin-bottom: 12px; }
-  .btn-download { display: inline-block; padding: 17px 54px; background: linear-gradient(135deg, #7f77dd, #5dcaa5); color: #fff; font-size: 17px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; letter-spacing: 0.5px; animation: glow 2.2s infinite; transition: transform 0.15s; }
+  .btn-download { display: inline-block; padding: 17px 54px; background: linear-gradient(135deg, #7f77dd, #5dcaa5); color: #fff; font-size: 17px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 0.5px; animation: glow 2.2s infinite; transition: transform 0.15s; }
   .btn-download:hover { transform: scale(1.04); }
   .btn-download:active { transform: scale(0.97); }
   @keyframes glow { 0%,100% { box-shadow: 0 0 18px #7f77dd55, 0 0 36px #7f77dd1a; } 50% { box-shadow: 0 0 28px #a89fef88, 0 0 54px #5dcaa533; } }
@@ -54,10 +54,29 @@
   .ticker span { padding: 0 36px; font-size: 13px; color: #a89fef88; }
   @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
   footer { border-top: 1px solid #ffffff09; text-align: center; padding: 20px; font-size: 12px; color: #2a2a2a; }
+  #bongo-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: #000000cc; align-items: center; justify-content: center; flex-direction: column; }
+  #bongo-overlay.show { display: flex; }
+  #bongo-box { background: #13131f; border: 2px solid #a89fef; border-radius: 16px; padding: 40px 56px; text-align: center; }
+  #bongo-cat { font-size: 100px; line-height: 1; animation: bongo-bounce 0.2s infinite alternate; }
+  @keyframes bongo-bounce { from{transform:translateY(0) rotate(-5deg)} to{transform:translateY(-12px) rotate(5deg)} }
+  #bongo-meow { font-size: 40px; font-weight: 800; color: #a89fef; margin-top: 16px; letter-spacing: 3px; animation: meow-pop 0.3s ease; }
+  @keyframes meow-pop { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
+  #bongo-close { margin-top: 24px; background: #7f77dd33; color: #a89fef; border: 1px solid #7f77dd; border-radius: 8px; padding: 10px 28px; font-size: 14px; cursor: pointer; }
+  #bongo-close:hover { background: #7f77dd66; }
 </style>
 </head>
 <body>
+<audio id="bg-music" src="kungfu.mp3" loop></audio>
 <canvas id="particles"></canvas>
+
+<div id="bongo-overlay">
+  <div id="bongo-box">
+    <div id="bongo-cat">🐱</div>
+    <div id="bongo-meow">MEOW</div>
+    <button id="bongo-close" onclick="document.getElementById('bongo-overlay').classList.remove('show')">close</button>
+  </div>
+</div>
+
 <div class="content">
 <nav>
   <div class="logo">VRC<span>-HACK</span> PRO</div>
@@ -99,7 +118,7 @@
   <div class="t-line">[<span>SYS</span>] Ready. Awaiting launch <span class="cursor"></span></div>
 </div>
 <div class="btn-wrap">
-  <a class="btn-download" href="https://www.youtube.com/watch?v=bCa28vA_GsA" target="_blank">⬇ Download Free — v9.4.1</a>
+  <button class="btn-download" id="dl-btn">⬇ Download Free — v9.4.1</button>
 </div>
 <p class="btn-note">Windows 10/11 · No antivirus flag · Auto-updater included</p>
 <div class="reviews">
@@ -109,6 +128,7 @@
 </div>
 <footer>VRC-HACK PRO © 2026</footer>
 </div>
+
 <script>
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
@@ -127,6 +147,23 @@ function draw() {
   ctx.globalAlpha=1; requestAnimationFrame(draw);
 }
 draw();
+
+const music = document.getElementById('bg-music');
+let started = false;
+function tryPlay() {
+  if (started) return;
+  started = true;
+  music.volume = 0.6;
+  music.play().catch(() => {});
+}
+document.addEventListener('mousemove', tryPlay, { once: true });
+document.addEventListener('click', tryPlay, { once: true });
+document.addEventListener('keydown', tryPlay, { once: true });
+document.addEventListener('touchstart', tryPlay, { once: true });
+
+document.getElementById('dl-btn').addEventListener('click', function() {
+  document.getElementById('bongo-overlay').classList.add('show');
+});
 </script>
 </body>
 </html>
