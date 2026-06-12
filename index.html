@@ -9,6 +9,26 @@
   body { background: #0a0a0f; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; overflow-x: hidden; }
   canvas#particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
   .content { position: relative; z-index: 1; }
+
+  /* ENTRY SPLASH */
+  #entry-splash {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0a0a0f;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  #entry-splash .splash-logo { font-size: 28px; font-weight: 800; color: #a89fef; letter-spacing: 4px; margin-bottom: 24px; }
+  #entry-splash .splash-logo span { color: #5dcaa5; }
+  #entry-splash .splash-prompt {
+    font-size: 16px; color: #666; letter-spacing: 2px; text-transform: uppercase;
+    animation: fade-pulse 1.4s infinite;
+  }
+  @keyframes fade-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  #entry-splash .splash-border {
+    width: 180px; height: 2px; background: linear-gradient(90deg, transparent, #7f77dd, transparent);
+    margin-bottom: 32px;
+  }
+
   nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; border-bottom: 1px solid #7f77dd33; background: #0a0a0fdd; backdrop-filter: blur(8px); }
   .logo { font-size: 20px; font-weight: 700; color: #a89fef; letter-spacing: 2px; }
   .logo span { color: #5dcaa5; }
@@ -66,8 +86,15 @@
 </style>
 </head>
 <body>
+
 <audio id="bg-music" src="kungfu.mp3" loop></audio>
-<canvas id="particles"></canvas>
+
+<!-- ENTRY SPLASH -->
+<div id="entry-splash">
+  <div class="splash-logo">VRC<span>-HACK</span> PRO</div>
+  <div class="splash-border"></div>
+  <div class="splash-prompt">Click anywhere to enter</div>
+</div>
 
 <div id="bongo-overlay">
   <div id="bongo-box">
@@ -149,17 +176,14 @@ function draw() {
 draw();
 
 const music = document.getElementById('bg-music');
-let started = false;
-function tryPlay() {
-  if (started) return;
-  started = true;
-  music.volume = 0.6;
+music.volume = 0.6;
+
+document.getElementById('entry-splash').addEventListener('click', function() {
+  this.style.transition = 'opacity 0.4s';
+  this.style.opacity = '0';
   music.play().catch(() => {});
-}
-document.addEventListener('mousemove', tryPlay, { once: true });
-document.addEventListener('click', tryPlay, { once: true });
-document.addEventListener('keydown', tryPlay, { once: true });
-document.addEventListener('touchstart', tryPlay, { once: true });
+  setTimeout(() => { this.style.display = 'none'; }, 400);
+});
 
 document.getElementById('dl-btn').addEventListener('click', function() {
   document.getElementById('bongo-overlay').classList.add('show');
