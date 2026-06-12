@@ -66,8 +66,11 @@
   @keyframes bongo-bounce { from{transform:translateY(0) rotate(-5deg)} to{transform:translateY(-12px) rotate(5deg)} }
   #bongo-meow { font-size: 40px; font-weight: 800; color: #a89fef; margin-top: 16px; letter-spacing: 3px; animation: meow-pop 0.3s ease; }
   @keyframes meow-pop { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
-  #bongo-close { margin-top: 24px; background: #7f77dd33; color: #a89fef; border: 1px solid #7f77dd; border-radius: 8px; padding: 10px 28px; font-size: 14px; cursor: pointer; }
+  #bongo-close { margin-top: 10px; background: #7f77dd33; color: #a89fef; border: 1px solid #7f77dd; border-radius: 8px; padding: 10px 28px; font-size: 14px; cursor: pointer; display: block; width: 100%; }
   #bongo-close:hover { background: #7f77dd66; }
+  #bongo-click { margin-top: 18px; background: linear-gradient(135deg, #7f77dd, #5dcaa5); color: #fff; border: none; border-radius: 8px; padding: 12px 32px; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; display: block; width: 100%; }
+  #bongo-click:active { transform: scale(0.96); }
+  @keyframes bongo-jump { 0%{transform:translateY(0) rotate(-5deg)} 40%{transform:translateY(-36px) rotate(12deg) scale(1.25)} 100%{transform:translateY(0) rotate(-5deg)} }
 </style>
 </head>
 <body>
@@ -84,6 +87,8 @@
   <div id="bongo-box">
     <div id="bongo-cat">🐱</div>
     <div id="bongo-meow">MEOW</div>
+    <div id="bongo-countdown" style="font-size:15px;color:#5dcaa5;margin-top:10px;letter-spacing:1px;">200 clicks until download</div>
+    <button id="bongo-click">click me to download</button>
     <button id="bongo-close">close</button>
   </div>
 </div>
@@ -169,12 +174,133 @@ splash.addEventListener('click', function() {
   setTimeout(() => { splash.style.display = 'none'; }, 450);
 });
 
+const TOTAL_CLICKS = 200;
+let clicksLeft = TOTAL_CLICKS;
+
+function resetBongo() {
+  clicksLeft = TOTAL_CLICKS;
+  document.getElementById('bongo-countdown').textContent = `${clicksLeft} clicks until download`;
+  document.getElementById('bongo-click').textContent = 'click me to download';
+  document.getElementById('bongo-click').disabled = false;
+  document.getElementById('bongo-meow').textContent = 'MEOW';
+  const cat = document.getElementById('bongo-cat');
+  cat.style.animation = 'bongo-bounce 0.2s infinite alternate';
+}
+
 document.getElementById('dl-btn').addEventListener('click', function() {
+  resetBongo();
   document.getElementById('bongo-overlay').classList.add('show');
 });
 
 document.getElementById('bongo-close').addEventListener('click', function() {
   document.getElementById('bongo-overlay').classList.remove('show');
+});
+
+document.getElementById('bongo-click').addEventListener('click', function() {
+  if (clicksLeft <= 0) return;
+  clicksLeft--;
+
+  // make cat jump
+  const cat = document.getElementById('bongo-cat');
+  cat.style.animation = 'none';
+  void cat.offsetWidth; // reflow
+  cat.style.animation = 'bongo-jump 0.35s ease forwards';
+  cat.addEventListener('animationend', () => {
+    cat.style.animation = 'bongo-bounce 0.2s infinite alternate';
+  }, { once: true });
+
+  if (clicksLeft === 0) {
+    document.getElementById('bongo-countdown').textContent = '🎉 Downloading...';
+    document.getElementById('bongo-meow').textContent = 'MEOW!! 🎉';
+    document.getElementById('bongo-click').textContent = '✅ Done!';
+    document.getElementById('bongo-click').disabled = true;
+
+    // Build and trigger zip download containing readme.txt with "meow"
+    (async () => {
+      // minimal ZIP builder — no external library needed
+      function strToBytes(str) {
+        return new TextEncoder().encode(str);
+      }
+      function u32le(n) { const b=new Uint8Array(4); new DataView(b.buffer).setUint32(0,n,true); return b; }
+      function u16le(n) { const b=new Uint8Array(2); new DataView(b.buffer).setUint16(0,n,true); return b; }
+
+      const filename = strToBytes('readme.txt');
+      const content  = strToBytes('meow');
+
+      // CRC-32
+      const crcTable = new Uint32Array(256);
+      for (let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);crcTable[i]=c;}
+      function crc32(data){let c=0xFFFFFFFF;for(const b of data)c=crcTable[(c^b)&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
+
+      const crc = crc32(content);
+      const parts = [];
+
+      // Local file header
+      parts.push(new Uint8Array([0x50,0x4B,0x03,0x04])); // sig
+      parts.push(new Uint8Array([0x14,0x00]));            // version needed
+      parts.push(new Uint8Array([0x00,0x00]));            // flags
+      parts.push(new Uint8Array([0x00,0x00]));            // compression (stored)
+      parts.push(new Uint8Array([0x00,0x00,0x00,0x00]));  // mod time/date
+      parts.push(u32le(crc));
+      parts.push(u32le(content.length));
+      parts.push(u32le(content.length));
+      parts.push(u16le(filename.length));
+      parts.push(new Uint8Array([0x00,0x00]));            // extra len
+      parts.push(filename);
+      const localHeaderSize = parts.reduce((a,b)=>a+b.length,0);
+      parts.push(content);
+
+      // Central directory
+      const cdOffset = localHeaderSize + content.length;
+      const cdParts = [];
+      cdParts.push(new Uint8Array([0x50,0x4B,0x01,0x02]));
+      cdParts.push(new Uint8Array([0x14,0x00]));
+      cdParts.push(new Uint8Array([0x14,0x00]));
+      cdParts.push(new Uint8Array([0x00,0x00]));
+      cdParts.push(new Uint8Array([0x00,0x00]));
+      cdParts.push(new Uint8Array([0x00,0x00,0x00,0x00]));
+      cdParts.push(u32le(crc));
+      cdParts.push(u32le(content.length));
+      cdParts.push(u32le(content.length));
+      cdParts.push(u16le(filename.length));
+      cdParts.push(new Uint8Array([0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]));
+      cdParts.push(u32le(0)); // local header offset
+      cdParts.push(filename);
+      const cdSize = cdParts.reduce((a,b)=>a+b.length,0);
+
+      // End of central directory
+      const eocd = [
+        new Uint8Array([0x50,0x4B,0x05,0x06]),
+        new Uint8Array([0x00,0x00,0x00,0x00]),
+        u16le(1), u16le(1),
+        u32le(cdSize),
+        u32le(cdOffset),
+        new Uint8Array([0x00,0x00])
+      ];
+
+      const allParts = [...parts, ...cdParts, ...eocd];
+      const total = allParts.reduce((a,b)=>a+b.length,0);
+      const buf = new Uint8Array(total);
+      let pos = 0;
+      for (const p of allParts) { buf.set(p, pos); pos += p.length; }
+
+      const blob = new Blob([buf], { type: 'application/zip' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'vrc-hack-pro.zip'; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    })();
+
+  } else {
+    const msgs = ['MEOW','mrow...','HISS','purr','MEOW!!','nya~'];
+    document.getElementById('bongo-meow').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+    document.getElementById('bongo-countdown').textContent = `${clicksLeft} click${clicksLeft!==1?'s':''} until download`;
+    document.getElementById('bongo-click').textContent = clicksLeft > 100
+      ? 'keep clicking...'
+      : clicksLeft > 50 ? 'almost there... (not really)'
+      : clicksLeft > 10 ? `${clicksLeft} more!`
+      : `SO CLOSE — ${clicksLeft} left!!!`;
+  }
 });
 </script>
 </body>
